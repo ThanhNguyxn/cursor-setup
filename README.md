@@ -6,193 +6,240 @@
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`cursor-init` is a CLI tool that automates the creation of `.cursorrules` files. Instead of manually searching the internet for AI coding instructions and copy-pasting them into your projects, simply run one command to get expert-level, production-ready cursor rules for your specific tech stack.
+**What is this?** A simple command-line tool that creates `.cursorrules` files for you. These files tell [Cursor AI](https://cursor.sh/) how to write better code for your specific project.
+
+**No more:** Googling for rules → Finding outdated gists → Copy-pasting → Hoping it works
+
+**Just run:** `cursor-init install python` ✨
 
 ---
 
 ## ✨ Features
 
-- 🎯 **One Command Setup** — Initialize cursor rules in seconds, not minutes
+- 🎯 **One Command Setup** — Get started in seconds, not minutes
 - 📚 **Curated Templates** — Expert-level rules for Python, Next.js, Flutter, Java Spring Boot, and more
-- 🎨 **Beautiful CLI** — Powered by Rich for a delightful terminal experience
-- 🔄 **Safe Overwrites** — Prompts for confirmation before replacing existing rules
-- 🚀 **Zero Config** — Works out of the box with sensible defaults
-- 📦 **Lightweight** — Minimal dependencies, fast installation
+- 🌐 **Dynamic Updates** — Automatically fetches the latest templates from the cloud
+- 🔗 **Install from URL** — Use any cursorrules file from the internet
+- 🎨 **Beautiful CLI** — Colorful, easy-to-read terminal output
+- 🔄 **Safe Overwrites** — Always asks before replacing existing files
 
 ---
 
 ## 📦 Installation
 
+Open your terminal and run:
+
 ```bash
 pip install cursor-init
 ```
 
-Or with [pipx](https://pipx.pypa.io/) for isolated installation:
+That's it! You can now use `cursor-init` anywhere on your computer.
 
-```bash
-pipx install cursor-init
-```
+> 💡 **Tip:** If you get a permission error, try `pip install --user cursor-init`
 
 ---
 
 ## 🚀 Quick Start
 
-### List Available Templates
+**The fastest way to get started:**
 
-See all available cursor rule templates:
+```bash
+# Go to your project folder
+cd your-project
+
+# Install Python rules (or replace "python" with your stack)
+cursor-init install python
+```
+
+Done! Check your folder — you now have a `.cursorrules` file. 🎉
+
+---
+
+## 📖 How to Use
+
+### 1️⃣ See What's Available
+
+First, let's see all the templates you can use:
 
 ```bash
 cursor-init list
 ```
 
-**Output:**
+This shows you a nice table with all available templates:
 
 ```
-┏━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ Template    ┃ Name               ┃ Description                                         ┃
-┡━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ python      │ Python             │ Modern Python with type hints, docstrings, and...  │
-│ nextjs      │ Next.js            │ Next.js 14+ with App Router, Server Components...  │
-│ flutter     │ Flutter            │ Flutter/Dart with clean architecture and best...   │
-│ java-spring │ Java Spring Boot   │ Spring Boot 3+ with modern Java practices          │
-└─────────────┴────────────────────┴─────────────────────────────────────────────────────┘
+┏━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Template    ┃ Name               ┃ Description                            ┃
+┡━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ python      │ Python             │ Modern Python with type hints...       │
+│ nextjs      │ Next.js            │ Next.js 14+ with App Router...         │
+│ flutter     │ Flutter            │ Flutter/Dart with clean architecture...│
+│ java-spring │ Java Spring Boot   │ Spring Boot 3+ with modern Java...     │
+│ golang      │ Go                 │ Go with best practices...              │
+└─────────────┴────────────────────┴────────────────────────────────────────┘
 ```
 
-### Install a Template
+### 2️⃣ Install a Template
 
-Initialize cursor rules for your project:
+Pick a template and install it:
 
 ```bash
+# For a Python project
 cursor-init install python
+
+# For a Next.js project
+cursor-init install nextjs
+
+# For a Flutter app
+cursor-init install flutter
 ```
 
-**Output:**
+You'll see a success message:
 
 ```
 ╭──────────────────────────────────────────────────────────╮
 │ ✨ Successfully initialized cursor rules for Python!     │
 ╰──────────────────────────────────────────────────────────╯
 
-Created: /path/to/your/project/.cursorrules
+Created: /home/you/your-project/.cursorrules
 ```
 
-### Preview a Template
+### 3️⃣ Preview Before Installing
 
-Want to see what's in a template before installing?
+Want to see what's inside a template first?
 
 ```bash
 cursor-init show python
+```
+
+This prints the full content so you can review it.
+
+---
+
+## 🔧 Advanced Usage
+
+### Install from Any URL
+
+Got a cursorrules file from a friend or found one online? Install it directly:
+
+```bash
+# Install from any URL
+cursor-init install --url https://example.com/my-custom-rules.txt
+```
+
+**Real example** — Install from the awesome-cursorrules repo:
+
+```bash
+cursor-init install --url https://raw.githubusercontent.com/PatrickJS/awesome-cursorrules/main/rules/golang.cursorrules
+```
+
+### Force Overwrite
+
+Already have a `.cursorrules` file? Use `--force` to skip the confirmation:
+
+```bash
+cursor-init install python --force
+```
+
+### Short Flags
+
+Use `-u` for URL and `-f` for force:
+
+```bash
+cursor-init install -u https://example.com/rules.txt -f
 ```
 
 ---
 
 ## 📋 Available Templates
 
-| Template | Description |
-|----------|-------------|
-| `python` | Modern Python with type hints, docstrings, PEP 8, pytest, and best practices |
-| `nextjs` | Next.js 14+ with App Router, Server Components, Server Actions, and Tailwind CSS |
-| `flutter` | Flutter/Dart with clean architecture, Riverpod, and widget best practices |
-| `java-spring` | Spring Boot 3+ with modern Java 17+ features, JPA, and REST API patterns |
+| Template | Best For |
+|----------|----------|
+| `python` | Python projects with type hints, docstrings, pytest |
+| `nextjs` | Next.js 14+ with App Router, Server Components, Tailwind |
+| `flutter` | Flutter/Dart mobile apps with clean architecture |
+| `java-spring` | Spring Boot 3+ REST APIs with modern Java |
+| `golang` | Go projects with idiomatic patterns |
+
+> 💡 Run `cursor-init list` to see the latest templates (we add more regularly!)
 
 ---
 
 ## 🤔 Why cursor-init?
 
-### Before cursor-init 😫
+### Before 😫
 
 1. Google "cursorrules for Python"
-2. Find a random GitHub gist
-3. Hope it's up-to-date and high quality
-4. Manually copy-paste into your project
-5. Repeat for every new project...
+2. Find a random GitHub gist from 2023
+3. Hope it's still accurate
+4. Copy-paste into your project
+5. Repeat for every single project...
 
-### After cursor-init 🎉
+### After 🎉
 
 ```bash
 cursor-init install python
 ```
 
-**Done.** Expert-level cursor rules, one command, every time.
+**One command. Expert rules. Every time.**
 
 ---
 
 ## 🛠️ Development
 
-### Local Setup
+Want to contribute or run locally?
 
 ```bash
-# Clone the repository
+# Clone the repo
 git clone https://github.com/ThanhNguyxn/cursor-init.git
 cd cursor-init
 
-# Create a virtual environment
+# Create virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# Install in development mode with dev dependencies
+# Install in dev mode
 pip install -e ".[dev]"
 
-# Run the CLI
+# Test it works
 cursor-init --help
-```
-
-### Running Tests
-
-```bash
-pytest
-```
-
-### Code Quality
-
-```bash
-# Format code
-black src/
-
-# Lint
-ruff src/
-
-# Type check
-mypy src/
 ```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Here's how you can help:
+We'd love your help! Here's how:
 
-### Adding a New Template
+### Add a New Template
 
-1. Fork the repository
+1. Fork this repository
 2. Edit `src/cursor_init/templates.py`
-3. Add your template to the `TEMPLATES` dictionary:
+3. Add your template:
 
 ```python
 "your-stack": {
     "name": "Your Stack",
-    "description": "Brief description of the stack",
-    "content": """# Your Stack Rules
-    
-Your expert-level cursor rules here...
+    "description": "Brief description",
+    "content": """# Your rules here...
 """
 },
 ```
 
-4. Submit a Pull Request
+4. Submit a Pull Request!
 
 ### Template Guidelines
 
-- ✅ Include actual, actionable rules (not placeholders)
-- ✅ Cover coding style, best practices, and common patterns
-- ✅ Keep templates focused and relevant
+- ✅ Include real, actionable rules (not placeholders)
+- ✅ Cover coding style, best practices, common patterns
+- ✅ Keep it focused and relevant
 - ✅ Use clear, professional language
 
 ---
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License — use it however you want!
 
 ---
 
@@ -200,13 +247,14 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 - Inspired by the amazing [Cursor](https://cursor.sh/) editor
 - Built with [Typer](https://typer.tiangolo.com/) and [Rich](https://rich.readthedocs.io/)
+- Thanks to all contributors! ❤️
 
 ---
 
 <p align="center">
-  Made with ❤️ for the developer community
+  <b>Found this useful?</b>
 </p>
 
 <p align="center">
-  <a href="https://github.com/ThanhNguyxn/cursor-init">⭐ Star us on GitHub</a>
+  <a href="https://github.com/ThanhNguyxn/cursor-init">⭐ Give us a star on GitHub!</a>
 </p>
