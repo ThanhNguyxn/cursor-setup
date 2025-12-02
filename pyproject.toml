@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cursor-init"
-version = "0.1.0"
-description = "🚀 Initialize your Cursor AI context in seconds. Stop copy-pasting .cursorrules files."
+version = "2.0.0"
+description = "🚀 Initialize your Cursor AI context in seconds. Community-driven templates with dynamic updates."
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.9"
@@ -20,9 +20,10 @@ keywords = [
     "developer-tools",
     "cli",
     "productivity",
+    "automation",
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
@@ -32,6 +33,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Code Generators",
     "Topic :: Utilities",
     "Typing :: Typed",

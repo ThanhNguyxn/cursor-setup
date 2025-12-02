@@ -3,15 +3,17 @@ cursor-init: A CLI tool for initializing .cursorrules files.
 
 This module contains the main CLI logic using Typer and Rich.
 Supports both local templates and dynamic remote registry.
+
+Version: 2.0.0
 """
 from pathlib import Path
 from typing import Optional
 
-import typer
 import requests
+import typer
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
+from rich.table import Table
 from rich.text import Text
 
 from cursor_init.templates import TEMPLATES
@@ -27,41 +29,38 @@ console = Console()
 # Constants
 CURSORRULES_FILENAME = ".cursorrules"
 REMOTE_REGISTRY_URL = "https://raw.githubusercontent.com/ThanhNguyxn/cursor-init/main/rules.json"
-REQUEST_TIMEOUT = 5  # seconds
+REQUEST_TIMEOUT = 2  # seconds (fast timeout for better UX)
 
 
-def fetch_remote_templates() -> dict:
+def get_registry() -> dict:
     """
-    Fetch templates from remote registry.
+    Fetch the template registry from remote source with offline fallback.
     
-    Returns an empty dict if network fails (silent fallback).
+    Attempts to fetch the latest templates from the remote rules.json.
+    If successful, merges with local templates (remote takes priority).
+    If network fails (offline/timeout), returns local templates silently.
+    
+    Returns:
+        Dictionary of all available templates (local + remote merged).
     """
+    # Start with local templates as the base
+    all_templates = TEMPLATES.copy()
+    
     try:
         response = requests.get(REMOTE_REGISTRY_URL, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
         data = response.json()
         
-        # Validate structure
+        # Validate structure and merge remote templates
         if isinstance(data, dict) and "templates" in data:
-            return data["templates"]
-        return {}
-    except (requests.RequestException, ValueError):
-        # Silent fallback on any network or parsing error
-        return {}
-
-
-def get_all_templates() -> dict:
-    """
-    Get merged templates from local + remote sources.
-    
-    Remote templates override local ones if keys conflict.
-    """
-    # Start with local templates
-    all_templates = TEMPLATES.copy()
-    
-    # Fetch and merge remote templates
-    remote_templates = fetch_remote_templates()
-    all_templates.update(remote_templates)
+            remote_templates = data["templates"]
+            # Remote templates override local ones if keys conflict
+            all_templates.update(remote_templates)
+            
+    except (requests.RequestException, ValueError, KeyError):
+        # Silent fallback: network error, timeout, or invalid JSON
+        # Just use local templates without any error message
+        pass
     
     return all_templates
 
@@ -70,9 +69,16 @@ def download_from_url(url: str) -> str:
     """
     Download content from a URL.
     
-    Raises an exception if download fails.
+    Args:
+        url: The URL to download content from.
+        
+    Returns:
+        The text content of the response.
+        
+    Raises:
+        requests.RequestException: If download fails.
     """
-    response = requests.get(url, timeout=REQUEST_TIMEOUT)
+    response = requests.get(url, timeout=10)  # Longer timeout for direct downloads
     response.raise_for_status()
     return response.text
 
@@ -81,8 +87,15 @@ def write_cursorrules(content: str, force: bool = False) -> Path:
     """
     Write content to .cursorrules file.
     
-    Returns the path to the created file.
-    Raises typer.Exit if user cancels overwrite.
+    Args:
+        content: The content to write to the file.
+        force: If True, overwrite without asking.
+    
+    Returns:
+        The path to the created file.
+        
+    Raises:
+        typer.Exit: If user cancels overwrite or write fails.
     """
     cursorrules_path = Path.cwd() / CURSORRULES_FILENAME
     
@@ -110,8 +123,8 @@ def write_cursorrules(content: str, force: bool = False) -> Path:
 @app.command()
 def list() -> None:
     """List all available cursor rule templates."""
-    # Fetch all templates (local + remote)
-    all_templates = get_all_templates()
+    # Fetch all templates (local + remote merged)
+    all_templates = get_registry()
     
     table = Table(
         title="📚 Available Cursor Rule Templates",
@@ -135,7 +148,7 @@ def list() -> None:
         justify="center",
     )
     console.print(
-        "[dim]Or use: cursor-init install --url <link>[/dim]",
+        "[dim]Pro tip: cursor-init install --url <link> for custom rules[/dim]",
         justify="center",
     )
     console.print()
@@ -145,25 +158,25 @@ def list() -> None:
 def install(
     name: Optional[str] = typer.Argument(
         None,
-        help="The template name to install (e.g., python, nextjs, flutter)",
+        help="Template name to install (e.g., python, nextjs, flutter, laravel)",
     ),
     url: Optional[str] = typer.Option(
         None,
         "--url", "-u",
-        help="Install directly from a URL (e.g., --url https://example.com/rule.txt)",
+        help="Install directly from a raw URL (e.g., from GitHub)",
     ),
     force: bool = typer.Option(
         False,
         "--force", "-f",
-        help="Overwrite existing .cursorrules without asking",
+        help="Overwrite existing .cursorrules without confirmation",
     ),
 ) -> None:
     """
     Install a cursor rule template to the current directory.
     
-    You can either:
-    - Use a template name: cursor-init install python
-    - Use a direct URL: cursor-init install --url https://example.com/rule.txt
+    Examples:
+        cursor-init install python
+        cursor-init install --url https://raw.githubusercontent.com/.../rules.txt
     """
     # Validate: either name or url must be provided, but not both
     if url and name:
@@ -182,14 +195,15 @@ def install(
         console.print()
         raise typer.Exit(code=1)
     
-    # Handle URL installation
+    # === URL Installation Mode ===
     if url:
-        console.print(f"\n[cyan]🌐 Downloading from:[/cyan] {url}\n")
+        console.print(f"\n[cyan]🌐 Downloading from URL...[/cyan]\n")
         
         try:
             content = download_from_url(url)
         except requests.RequestException as e:
-            console.print(f"\n[red]❌ Error downloading:[/red] {e}\n")
+            console.print(f"\n[red]❌ Failed to download:[/red] {e}\n")
+            console.print("[dim]Check the URL and your internet connection.[/dim]")
             raise typer.Exit(code=1)
         
         cursorrules_path = write_cursorrules(content, force)
@@ -206,8 +220,8 @@ def install(
         console.print()
         return
     
-    # Handle template name installation
-    all_templates = get_all_templates()
+    # === Template Name Installation Mode ===
+    all_templates = get_registry()
     
     if name not in all_templates:
         console.print(
@@ -217,12 +231,26 @@ def install(
         for key in sorted(all_templates.keys()):
             console.print(f"  • {key}", style="dim")
         console.print()
-        console.print("[dim]Tip: You can also use --url to install from any URL[/dim]")
+        console.print("[dim]Tip: Use --url to install from any URL[/dim]")
         console.print()
         raise typer.Exit(code=1)
 
     template = all_templates[name]
-    cursorrules_path = write_cursorrules(template["content"], force)
+    
+    # Check if template has a URL (remote template) or content (local template)
+    if "url" in template:
+        # Remote template: download from URL
+        console.print(f"\n[cyan]🌐 Fetching {template['name']} rules...[/cyan]\n")
+        try:
+            content = download_from_url(template["url"])
+        except requests.RequestException as e:
+            console.print(f"\n[red]❌ Failed to download template:[/red] {e}\n")
+            raise typer.Exit(code=1)
+    else:
+        # Local template: use embedded content
+        content = template["content"]
+    
+    cursorrules_path = write_cursorrules(content, force)
 
     # Success message
     success_text = Text()
@@ -242,11 +270,11 @@ def install(
 def show(
     name: str = typer.Argument(
         ...,
-        help="The template name to preview (e.g., python, nextjs, flutter, java-spring)",
+        help="Template name to preview (e.g., python, nextjs, flutter)",
     ),
 ) -> None:
     """Preview a cursor rule template without installing it."""
-    all_templates = get_all_templates()
+    all_templates = get_registry()
     
     if name not in all_templates:
         console.print(
@@ -259,11 +287,22 @@ def show(
         raise typer.Exit(code=1)
 
     template = all_templates[name]
+    
+    # Check if template has a URL (remote) or content (local)
+    if "url" in template:
+        console.print(f"\n[cyan]🌐 Fetching {template['name']} preview...[/cyan]\n")
+        try:
+            content = download_from_url(template["url"])
+        except requests.RequestException as e:
+            console.print(f"\n[red]❌ Failed to fetch preview:[/red] {e}\n")
+            raise typer.Exit(code=1)
+    else:
+        content = template["content"]
 
     console.print()
     console.print(
         Panel(
-            template["content"],
+            content,
             title=f"📄 {template['name']} Template",
             border_style="cyan",
             padding=(1, 2),
