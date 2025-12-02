@@ -127,10 +127,10 @@ Got a cursorrules file from a friend or found one online? Install it directly:
 cursor-init install --url https://example.com/my-custom-rules.txt
 ```
 
-**Real example** — Install from the awesome-cursorrules repo:
+**Real example** — Install Go rules from awesome-cursorrules:
 
 ```bash
-cursor-init install --url https://raw.githubusercontent.com/PatrickJS/awesome-cursorrules/main/rules/golang.cursorrules
+cursor-init install --url https://raw.githubusercontent.com/PatrickJS/awesome-cursorrules/main/rules/go-backend-scalability-cursorrules-prompt-file/.cursorrules
 ```
 
 ### Force Overwrite
